@@ -4,6 +4,10 @@
 <dict>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Just test</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Need test</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Just Test</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -36,8 +40,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>Need test</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -74,20 +74,23 @@ class ViewController: UIViewController  {
         present(activityViewController, animated: true, completion: nil)
         
     }
+    
+    func updateToolbar(_ state: Bool) {
+        toolbar.isHidden = state
+        self.navigationController?.setNavigationBarHidden(state, animated: true)
+    }
         
     
     func generateMemedImage() -> UIImage {
         
-        toolbar.isHidden = true
-        self.navigationController?.setNavigationBarHidden(true, animated: true)
+        updateToolbar(true)
         
         UIGraphicsBeginImageContext(self.view.frame.size)
         view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
         let memedImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
-        toolbar.isHidden = false
-        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        updateToolbar(false)
 
         return memedImage
     }
@@ -123,19 +126,13 @@ class ViewController: UIViewController  {
 }
 
 extension ViewController: UINavigationControllerDelegate {
-    @IBAction func pickAnImageFromAlbum(_ sender: UIBarButtonItem) {
+    
+    @IBAction func pickAnImage(_ sender: UIBarButtonItem) {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        imagePicker.sourceType = .photoLibrary
+        imagePicker.sourceType = sender.tag == 2 ? .photoLibrary : .camera
         present(imagePicker, animated: true, completion: nil)
     }
-    
-    @IBAction func pickAnImageFromCamera(_ sender: UIBarButtonItem) {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.sourceType = .camera
-        present(imagePicker, animated: true, completion: nil)
-       }
 }
 
 extension ViewController: UIImagePickerControllerDelegate {
