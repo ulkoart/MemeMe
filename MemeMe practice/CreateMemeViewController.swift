@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController  {
+class CreateMemeViewController: UIViewController  {
 
     @IBOutlet weak var imagePickerView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
@@ -26,16 +26,21 @@ class ViewController: UIViewController  {
         ] as [NSAttributedString.Key : Any]
     
     override func viewWillAppear(_ animated: Bool) {
-        subscribeToKeyboardNotifications()
         super.viewWillAppear(animated)
+        subscribeToKeyboardNotifications()
+        self.tabBarController?.tabBar.isHidden = true
+        navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        unsubscribeFromKeyboardNotifications()
         super.viewWillDisappear(animated)
+        unsubscribeFromKeyboardNotifications()
+        self.tabBarController?.tabBar.isHidden = false
+        navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         
         cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
         
@@ -43,7 +48,6 @@ class ViewController: UIViewController  {
         prepareTextView(textField: bottomText)
         clearUI()
         
-        super.viewDidLoad()
     }
     
     func clearUI() {
@@ -60,19 +64,33 @@ class ViewController: UIViewController  {
         textField.textAlignment = .center
     }
     
+    @IBAction func cancelButtonPressed(_ sender: UIBarButtonItem){
+        self.navigationController?.popToRootViewController(animated: true)
+    }
+    
     @IBAction func shareButtonPressed(_ sender: UIBarButtonItem) {
         
-        let meme = generateMemedImage()
-        let activityViewController = UIActivityViewController(activityItems: [meme] , applicationActivities: nil)
+        let memeImage = generateMemedImage()
+        let activityViewController = UIActivityViewController(activityItems: [memeImage] , applicationActivities: nil)
         
         activityViewController.completionWithItemsHandler = { activity, success, items, error in
             if (success) {
+                self.save(memeImage)
                 self.clearUI()
+                
+                self.navigationController?.popViewController(animated: true)
             }
         }
         
         present(activityViewController, animated: true, completion: nil)
         
+    }
+    
+    func save(_ memeImage: UIImage) {
+        let meme = Meme(topText: topText.text!, bottomText: bottomText.text!, originalImage: image.image!, memedImage: memeImage)
+        let object = UIApplication.shared.delegate
+        let appDelegate = object as! AppDelegate
+        appDelegate.memes.append(meme)
     }
     
     func updateToolbar(_ state: Bool) {
@@ -125,7 +143,7 @@ class ViewController: UIViewController  {
     }
 }
 
-extension ViewController: UINavigationControllerDelegate {
+extension CreateMemeViewController: UINavigationControllerDelegate {
     
     @IBAction func pickAnImage(_ sender: UIBarButtonItem) {
         let imagePicker = UIImagePickerController()
@@ -135,7 +153,8 @@ extension ViewController: UINavigationControllerDelegate {
     }
 }
 
-extension ViewController: UIImagePickerControllerDelegate {
+extension CreateMemeViewController: UIImagePickerControllerDelegate {
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.originalImage] as? UIImage {
             imagePickerView.image = image
@@ -145,7 +164,7 @@ extension ViewController: UIImagePickerControllerDelegate {
     }
 }
 
-extension ViewController: UITextFieldDelegate {
+extension CreateMemeViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if(textField.text == "TOP" || textField.text == "BOTTOM") {
